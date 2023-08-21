@@ -1,7 +1,10 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import FormInput from "./FormInput";
+import { ThemeContext } from "./App";
 
 function BuyerForm({ setPage }) {
+  const [theme] = useContext(ThemeContext);
+
   const [form, setForm] = useState({
     code: "",
     name: "",

@@ -1,4 +1,10 @@
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useState,
+  createContext,
+  useContext,
+  useReducer,
+} from "react";
 
 import ImageMenu from "./assets/Menu.svg";
 import ImageLogo from "./assets/Logo.png";
@@ -7,6 +13,13 @@ import ImageSlider1 from "./assets/Slider1.png";
 import ImageSlider2 from "./assets/Slider2.png";
 import itemList from "./itemList";
 import BuyerForm from "./BuyerForm";
+import basketReducer, { useBasket } from "./Reducer";
+
+export const ThemeContext = createContext({
+  mode: "light", //light or dark
+  fontSize: 16,
+  colorSchema: "#ffffff",
+});
 
 function useIntervalHook(callback, intervalTime = 1000) {
   useEffect(() => {
@@ -24,11 +37,30 @@ function useIntervalHook(callback, intervalTime = 1000) {
 }
 
 export default function App() {
+  const [theme, setTheme] = useState({
+    mode: "light", //light or dark
+    fontSize: 16,
+    colorSchema: "#ffffff",
+  });
+
+  return (
+    <ThemeContext.Provider value={[theme, setTheme]}>
+      <Home />
+    </ThemeContext.Provider>
+  );
+}
+
+export function Home() {
   const [basketList, setBasket] = useState([]);
   const [openBasketDialog, setBasketDialog] = useState(false);
   const [page, setPage] = useState("home");
   const [sliderImage, setSliderImage] = useState(ImageSlider1);
-
+  const [theme, setTheme] = useContext(ThemeContext);
+  const [reduceBasket, dispatch] = useReducer(basketReducer, []);
+  const basketStore = useBasket((state) => state.itemList);
+  const addItem = useBasket((state) => state.addItem);
+  const deleteItem = useBasket((state) => state.deleteItem);
+  console.log(basketStore, addItem);
   useIntervalHook(
     () =>
       setSliderImage((image) =>
@@ -36,7 +68,6 @@ export default function App() {
       ),
     2222
   );
-
   //just for debug
   window.basketList = basketList;
 
@@ -73,12 +104,53 @@ export default function App() {
 
   if (page === "home")
     return (
-      <div className="bg-[#f1f1f1]">
+      <div
+        id="home"
+        className={`bg-[#f1f1f1]  ${theme.mode == "light" ? "" : "dark"}`}
+      >
         {/* toolbar */}
-        <div className="flex p-3 px-6 items-center ">
+        <div className="flex p-3 px-6 items-center dark:bg-black">
           <img src={ImageMenu} />
           <img src={ImageLogo} />
           فراوین
+          <button
+            onClick={() => {
+              setTheme({
+                ...theme,
+                mode: theme.mode == "light" ? "dark" : "light",
+              });
+            }}
+          >
+            {theme.mode == "light" ? "dark" : "light"}
+          </button>
+          <button
+            onClick={() => {
+              dispatch({
+                type: "addItem",
+                item: {
+                  name: "item1",
+                },
+              });
+
+              addItem({ name: "item1" });
+            }}
+          >
+            dispatch
+          </button>
+          <button
+            onClick={() => {
+              dispatch({
+                type: "delete",
+                item: {
+                  name: "item1",
+                },
+              });
+
+              deleteItem({ name: "item1" });
+            }}
+          >
+            dispatch delete
+          </button>
           <div className="flex-1" />
           <div className="relative" onClick={() => setBasketDialog(true)}>
             <img src={ImageBag} className="w-6 h-6 ml-1" />

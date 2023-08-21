@@ -1,14 +1,14 @@
-import React, { createContext, useState } from "react";
+import React from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App";
-import "./index.css";
+import "../index.css";
+import Api from "./Api";
 
 //theme for whole app
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   // for dev purpuse
   // just render twice
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
+  // <React.StrictMode>
+  <Api />
+  // </React.StrictMode>
 );
