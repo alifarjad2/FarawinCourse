@@ -4,6 +4,7 @@ import {
   createContext,
   useContext,
   useReducer,
+  useMemo,
 } from "react";
 
 import ImageMenu from "./assets/Menu.svg";
@@ -13,7 +14,7 @@ import ImageSlider1 from "./assets/Slider1.png";
 import ImageSlider2 from "./assets/Slider2.png";
 import itemList from "./itemList";
 import BuyerForm from "./BuyerForm";
-import basketReducer, { useBasket } from "./Reducer";
+import basketReducer, { useStore as useBasket } from "./Reducer";
 
 export const ThemeContext = createContext({
   mode: "light", //light or dark
@@ -60,6 +61,29 @@ export function Home() {
   const basketStore = useBasket((state) => state.itemList);
   const addItem = useBasket((state) => state.addItem);
   const deleteItem = useBasket((state) => state.deleteItem);
+
+  const SliderSection = useMemo(() => {
+    return (
+      <div className="relative mt-2 m-auto w-full h-48">
+        <img
+          src={ImageSlider1}
+          className={
+            "absolute m-auto w-full p-4 transition-opacity" +
+            (sliderImage === ImageSlider2 ? " opacity-0" : "")
+          }
+          style={{ transitionDuration: "1500ms" }}
+        />
+        <img
+          src={ImageSlider2}
+          className={
+            "m-auto w-full p-4  absolute transition-opacity" +
+            (sliderImage === ImageSlider1 ? " opacity-0" : "")
+          }
+          style={{ transitionDuration: "1500ms" }}
+        />
+      </div>
+    );
+  }, []);
   console.log(basketStore, addItem);
   useIntervalHook(
     () =>
@@ -167,24 +191,7 @@ export function Home() {
         <div className="h-[1px] bg-slate-300 mx-4" />
 
         {/* for animation add div */}
-        <div className="relative mt-2 m-auto w-full h-48">
-          <img
-            src={ImageSlider1}
-            className={
-              "absolute m-auto w-full p-4 transition-opacity" +
-              (sliderImage === ImageSlider2 ? " opacity-0" : "")
-            }
-            style={{ transitionDuration: "1500ms" }}
-          />
-          <img
-            src={ImageSlider2}
-            className={
-              "m-auto w-full p-4  absolute transition-opacity" +
-              (sliderImage === ImageSlider1 ? " opacity-0" : "")
-            }
-            style={{ transitionDuration: "1500ms" }}
-          />
-        </div>
+        {SliderSection}
 
         <div className="flex p-6 gap-4 flex-wrap">
           {itemList.map((item) => {
